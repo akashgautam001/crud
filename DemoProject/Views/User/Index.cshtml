@@ -1,0 +1,111 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+@using System.Data;
+@using System.Data.SqlClient;
+@using DemoProject.Models;
+<div class="col-sm-12">
+    <div class="col-sm-4"></div>
+    <form action="/User/Index" method="post" enctype="multipart/form-data">
+        <div class="col-sm-4">
+            <label>Name</label>
+            <input type="text" class="form-control" name="txtname" />
+            <label>Email </label>
+            <input type="email" class="form-control" name="txtemail" />
+            @{
+                string query = "select * From TBl_Country";
+                DbManager db = new DbManager();
+                DataTable dt = db.Display_All_Records(query);
+                <label>Country_Name</label>
+                <select id="country" class="form-control" name="txtcountry">
+                    <option value="">--Select--Country---</option>
+                    @for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        <option value="@dt.Rows[i]["country_code"]">@dt.Rows[i]["country_name"]</option>
+                    }
+                </select>
+            }
+            State_Name
+            <select id="State" class="form-control" name="txtstate"></select>
+            Distick_Name
+            <select id="Distick" class="form-control" name="txtdistick"></select><br />
+            <label>Image</label>
+            <input  type="file"name="pic"/>
+            <input type="submit" class="form-control" style="background:red;color:white" />
+
+        </div>
+    </form>
+
+    <div class="col-sm-4"></div>
+</div>
+
+<script src="/Scripts/jquery-3.4.1.js"></script>
+<script src="/Scripts/bootstrap.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#country").change(function () {
+            var County_code = $("#country").val();
+            $.ajax({
+                type: "post",
+                url: "/User/BindState",
+                data: { County: County_code },
+                success: function (data) {
+                    $("#State").html(data);
+                }
+            })
+
+        })
+        $("#State").change(function () {
+            var County_code = $("#State").val();
+            $.ajax({
+                type: "post",
+                url: "/User/BindDistick",
+                data: { Distick: County_code },
+                success: function (data) {
+                    $("#Distick").html(data);
+                }
+
+
+            })
+
+        })
+    })
+</script>
+
+@{ 
+    DbManager db1 = new DbManager();
+    string query1 = "select *  from tbl_Csdall_Data_add";
+    DataTable dtt = db1.Display_All_Records(query1);
+
+}
+
+<div class="col-sm-12">
+<table class="table table-responsive" style="border:1px solid black">
+<thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Country_Name</th>
+        <th>State_Name</th>
+        <th>Distick_Name</th>
+        <th>Image</th>
+        <th>Delete</th>
+    </tr>
+</thead>
+    <tbody class="panel-body">
+        @for(int i = 0; i < dtt.Rows.Count; i++)
+            {
+               <tr>
+                   <td>@dtt.Rows[i]["name"]</td>
+                   <td>@dtt.Rows[i]["email"]</td>
+                   <td>@dtt.Rows[i]["county_name"]</td>
+                   <td>@dtt.Rows[i]["state_name"]</td>
+                   <td>@dtt.Rows[i]["distick_name"]</td>
+                   <td><img src="~/Content/PIc/@dtt.Rows[i]["Image"]" style="height:100px;width:100px;" /></td>
+                   <td><a href="/User/delete?del=@dtt.Rows[i]["email"]">Delete</a></td>
+               </tr>
+            }
+    </tbody>
+</table>
+</div>

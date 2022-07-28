@@ -1,0 +1,75 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+@using System.Data;
+@using DemoProject.Models;
+@using System.Data.SqlClient;
+<div class="row">
+    <div class="col-lg-12">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+            <label>Name</label>
+            <input type="text" class="form-control" /><br />
+            <label>Email</label>
+            <input type="text" class="form-control" /><br />
+
+            <label>Password</label>
+            <input type="password" class="form-control" /><br />
+
+            <label>Address</label>
+            <input type="text" class="form-control" /><br />
+
+            <label>Mobile</label>
+            <input type="number" class="form-control" /><br />
+            <label>Country</label>
+            @{
+                DbManager db = new DbManager();
+                string query = "select * from TBl_Country";
+                DataTable dt = db.Display_All_Records(query);
+                <select id="country" class="form-control">
+                    <option value="">--Select --Country---</option>
+                    @for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        <option value="@dt.Rows[i]["country_code"]">@dt.Rows[i]["country_name"]</option>
+                    }
+                </select>
+            }
+            <label>State</label>
+            <select id="State" class="form-control"></select>
+            <label>Distick</label>
+            <select id="Distick" class="form-control"></select>
+            <input type="Submit" class="form-control" style="background:red;color:white" />
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+</div>
+
+<script src="/Scripts/jquery-3.4.1.js"></script>
+<script src="/Scripts/bootstrap.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#country").change(function () {
+            var Ccode = $("#country").val();
+            $.ajax({
+                type: "post",
+                url: "/home/BindCodeState",
+                data: { country: Ccode },
+                success: function (data) {
+                    $("#State").html(data);
+                }
+            })
+        })
+        $("#State").change(function () {
+            var CState = $("#State").val();
+            $.ajax({
+                type: "post",
+                url: "/home/BindDistick",
+                data: { Distick: CState },
+                success: function (data) {
+                    $("#Distick").html(data);
+                }
+            })
+        })
+    })
+</script>
